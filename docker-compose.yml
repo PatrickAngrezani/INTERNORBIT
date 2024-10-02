@@ -1,0 +1,22 @@
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: 'internorbit1'
+      MYSQL_USER: 'patrickangrezani'
+      MYSQL_PASSWORD: '12345678'
+      MYSQL_ROOT_PASSWORD: '12345678'
+
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - db_network
+
+volumes:
+  mysql_data:
+
+networks:
+  db_network:
+    driver: bridge
