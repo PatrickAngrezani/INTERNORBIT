@@ -20,3 +20,4 @@ volumes:
 networks:
   db_network:
     driver: bridge
+    
