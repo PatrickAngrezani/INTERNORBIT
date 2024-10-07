@@ -1,8 +1,8 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Post
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
+from .forms import PostForm
+from django.contrib.auth.decorators import login_required
 
 
 def post_list(request):
@@ -15,27 +15,48 @@ def post_detail(request, pk):
     return JsonResponse({'id': post.id, 'title': post.title, 'content': post.content})
 
 
-@csrf_exempt
+@login_required
 def post_create(request):
     if request.method == "POST":
-        data = json.loads(request.body)
-        post = Post.objects.create(
-            title=data['title'], content=data['content'])
-        return JsonResponse({'id': post.id, 'title': post.title, 'content': post.content})
+        form = PostForm(request.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.save()
+            return redirect('post_list')
+        else:
+            print(form.errors)
+    else:
+        form = PostForm()
+
+    return render(request, 'post_form.html', {
+        'form': form,
+        'form_title': 'Create New Post',
+        'button_text': 'Create Post'
+    })
 
 
-@csrf_exempt
+@login_required
 def post_update(request, pk):
-    if request.method == 'PUT':
-        data = json.loads(request.body)
-        post = get_object_or_404(Post, pk=pk)
-        post.title = data['title']
-        post.content = data['content']
-        post.save()
-        return JsonResponse({'id': post.id, 'title': post.title, 'content': post.content})
+    post = get_object_or_404(Post, pk=pk)
+
+    if request.method == 'POST':
+        form = PostForm(request.POST, instance=post)
+        if form.is_valid():
+            form.save()
+            return redirect('post_detail', pk=post.pk)
+        else:
+            form = PostForm(instance=post)
+
+        return render(request, 'post_form.html', {
+            'form': form,
+            'post': post,
+            'form_title': 'Update Post',
+            'button_text': 'Save Changes'
+        })
 
 
-@csrf_exempt
+@login_required
 def post_delete(request, pk):
     if request.method == 'DELETE':
         post = get_object_or_404(Post, pk=pk)
