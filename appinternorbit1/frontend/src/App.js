@@ -1,14 +1,30 @@
+import axios from "axios";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 function App() {
   const [postTitle, setPostTitle] = useState("");
+  const [searchResult, setSearchResult] = useState(null);
   const navigate = useNavigate();
 
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
     if (postTitle.trim()) {
-      navigate(`/search-posts?title=${encodeURIComponent(postTitle)}`);
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/posts/?title=${encodeURIComponent(postTitle)}`
+        );
+
+        if (response.data.length > 0) {
+          setSearchResult(response.data);
+          navigate(`/search-posts?title=${encodeURIComponent(postTitle)}`);
+        } else {
+          alert("No post found with the given title.");
+        }
+      } catch (error) {
+        console.error("Error searching for post:", error);
+        alert("Error searching for post");
+      }
     }
   };
 
