@@ -5,7 +5,6 @@ import { getPostById, updatePost } from "../services/postService";
 
 function UpdatePost() {
   const { postId } = useParams();
-
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
@@ -22,19 +21,30 @@ function UpdatePost() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const updatedData = {
-      title: title,
-      content: content,
-    };
+
+    const updatedData = {};
+    if (title.trim()) {
+      updatedData.title = title;
+    }
+    if (content.trim()) {
+      updatedData.content = content;
+    }
+
+    if (Object.keys(updatedData).length === 0)
+      return alert("Please update at least one field");
 
     updatePost(postId, updatedData)
       .then((response) => {
         console.log("Post updated succesfully!", response);
         alert("Post updated sucessfully!");
+        setTitle("");
+        setContent("");
       })
       .catch((error) => {
         console.error("Error updating post:", error);
         alert("Error updating Post");
+        setTitle("");
+        setContent("");
       });
   };
 
@@ -48,7 +58,7 @@ function UpdatePost() {
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            required
+            placeholder="leave empty if no change"
           />
         </div>
         <div>
@@ -57,7 +67,7 @@ function UpdatePost() {
             type="text"
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            required
+            placeholder="leave empty if no change"
           />
         </div>
         <button type="submit">Update Post</button>
