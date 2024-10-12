@@ -10,11 +10,20 @@ from rest_framework import status
 from .serializers import PostSerializer
 
 
+@api_view(['GET'])
 def post_list(request):
-    posts = Post.objects.all().values()
-    return JsonResponse(list(posts), safe=False)
+    title = request.GET.get('title')
+
+    if title:
+        posts = Post.objects.filter(title__icontains=title)
+    else:
+        posts = Post.objects.all().values()
+
+    serializer = PostSerializer(posts, many=True)
+    return Response(serializer.data)
 
 
+@api_view(['GET'])
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
     serializer = PostSerializer(post)
@@ -44,9 +53,10 @@ def post_update(request, pk):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@login_required
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
 def post_delete(request, pk):
     if request.method == 'DELETE':
         post = get_object_or_404(Post, pk=pk)
         post.delete()
-        return JsonResponse({'message': 'Post deleted succesfully'})
+    return Response(status=status.HTTP_204_NO_CONTENT)
