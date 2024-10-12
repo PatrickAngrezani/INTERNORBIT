@@ -19,7 +19,7 @@ const createPost = (postData) => {
 
 const updatePost = (id, updatedData) => {
   const updatePostURL = `${BASE_API_POSTS_URL}${id}/update/`;
-  
+
   return axios.put(updatePostURL, updatedData, { headers: getAuthHeader() });
 };
 
@@ -27,4 +27,17 @@ const getPostById = (id) => {
   return axios.get(`${BASE_API_POSTS_URL}${id}`);
 };
 
-export { getPosts, createPost, getAuthHeader, updatePost, getPostById };
+const deletePost = (id) => {
+  const deletePostURL = `${BASE_API_POSTS_URL}delete/${id}/`;
+
+  return axios.delete(deletePostURL, { headers: getAuthHeader() });
+};
+
+export {
+  getPosts,
+  createPost,
+  getAuthHeader,
+  updatePost,
+  getPostById,
+  deletePost,
+};

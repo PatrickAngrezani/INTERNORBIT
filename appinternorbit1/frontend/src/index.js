@@ -9,6 +9,7 @@ import Login from "./components/Login";
 import CreatePost from "./components/CreatePost";
 import ListPosts from "./components/ListPosts";
 import UpdatePost from "./components/UpdatePost";
+import SearchPosts from "./components/SearchPosts";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -23,6 +24,7 @@ function MainApp() {
         <Route path="/login" element={<Login setAuthToken={setAuthToken} />} />
         <Route path="/posts" element={<ListPosts />} />
         <Route path="/update-post/:postId" element={<UpdatePost />} />
+        <Route path="/search-posts" element={<SearchPosts />} />
       </Routes>
     </Router>
   );
