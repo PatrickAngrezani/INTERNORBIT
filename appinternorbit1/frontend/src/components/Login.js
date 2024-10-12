@@ -13,14 +13,19 @@ function Login({ setAuthToken }) {
       .then((response) => {
         if (response.status === 200) {
           const token = response.data.access;
-          console.log({ token });
 
           setAuthToken(token);
           localStorage.setItem("authToken", token);
+          alert("User succesfully login!");
+          setUsername("");
+          setPassword("");
         }
       })
       .catch((error) => {
         console.error("Error logging:", error);
+        alert("User not authenticate!");
+        setUsername("");
+        setPassword("");
       });
   };
 
