@@ -1,7 +1,11 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { getAuthHeader } from "../services/postService";
+import {
+  addComment,
+  deleteComment,
+  updateComment,
+} from "../services/commentService";
 
 function SearchPosts() {
   const [posts, setPosts] = useState([]);
@@ -38,14 +42,7 @@ function SearchPosts() {
   };
 
   const handleUpdateComment = (commentId, postId) => {
-    axios
-      .put(
-        `http://127.0.0.1:8000/posts/${postId}/comments/${commentId}/`,
-        { content: newCommentContent },
-        {
-          headers: getAuthHeader(),
-        }
-      )
+    updateComment(postId, commentId, newCommentContent)
       .then((response) => {
         const updatedPosts = posts.map((post) => {
           if (post.id === postId) {
@@ -70,10 +67,7 @@ function SearchPosts() {
   };
 
   const handleDeleteComment = (commentId, postId) => {
-    axios
-      .delete(`http://127.0.0.1:8000/posts/${postId}/comments/${commentId}/`, {
-        headers: getAuthHeader(),
-      })
+    deleteComment(postId, commentId)
       .then(() => {
         const updatedPosts = posts.map((post) => ({
           ...post,
@@ -95,10 +89,7 @@ function SearchPosts() {
       content: newComment,
     };
 
-    axios
-      .post(`http://127.0.0.1:8000/posts/${postId}/comments/`, commentData, {
-        headers: getAuthHeader(),
-      })
+    addComment(postId, commentData)
       .then((response) => {
         const updatedPosts = posts.map((post) => {
           if (post.id === postId) {
